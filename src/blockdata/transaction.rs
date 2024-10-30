@@ -614,18 +614,15 @@ impl Transaction {
             input.sequence.consensus_encode(&mut input_data).expect("engines don't error");
         }
         let input_hash = sha256::Hash::hash(&input_data);
-        info!("tbcTxid input_hash:{:?}", input_hash);
 
         // Step 2: Encode unlocking scripts (script_sig)
         let mut script_data = Vec::new();
         for input in &self.input {
             let script_bytes = input.script_sig.as_bytes();
-            info!("script_bytes:{:?}",script_bytes);
             let script_hash = sha256::Hash::hash(script_bytes);
             script_data.extend_from_slice(&script_hash[..]);
         }
         let scripts_hash = sha256::Hash::hash(&script_data);
-        info!("tbcTxid scripts_hash:{:?}", scripts_hash);
 
         (input_hash, scripts_hash)
     }
@@ -640,9 +637,7 @@ impl Transaction {
             let script_hash = sha256::Hash::hash(script_bytes);
             output_data.extend_from_slice(&script_hash[..]);
         }
-        info!("line:{:?} tbcTxid output_data:{:?}", output_data.len(), output_data);
         let outputs_hash = sha256::Hash::hash(&output_data);
-        info!("tbcTxid outputs_hash:{:?}", outputs_hash);
 
         outputs_hash
     }
@@ -702,14 +697,11 @@ impl Transaction {
 
         // 获取 enc 的长度
         let enc_length = length_tracking_enc.length();
-        info!("tbcTxid enc length: {}", enc_length);
 
         // 打印 enc 中的数据
         let encoded_data = &length_tracking_enc.buffer();
-        info!("tbcTxid encoded data: {:?}", encoded_data);
 
         let hash_root = Txid::from_engine(enc);
-        info!("tbcTxid end hash_root:{:?}", hash_root);
         hash_root
     }
 
@@ -1154,7 +1146,6 @@ impl Encodable for Transaction {
 
 impl Decodable for Transaction {
     fn consensus_decode_from_finite_reader<R: io::Read + ?Sized>(r: &mut R) -> Result<Self, encode::Error> {
-        info!("start consensus_decode_from_finite_reader");
         let version = i32::consensus_decode_from_finite_reader(r)?;
         let input = Vec::<TxIn>::consensus_decode_from_finite_reader(r)?;
         // segwit
