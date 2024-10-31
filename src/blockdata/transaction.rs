@@ -37,7 +37,6 @@ use crate::parse::impl_parse_str_through_int;
 #[cfg(doc)]
 use crate::util::sighash::SchnorrSighashType;
 
-use log::info;
 use std::io::Write;
 use crate::util::length_tracking_writer::LengthTrackingWriter;
 
@@ -694,12 +693,6 @@ impl Transaction {
         length_tracking_enc.write_all(&scripts_hash[..]).expect("engines don't error");
         
         length_tracking_enc.write_all(&outputs_hash[..]).expect("engines don't error");
-
-        // 获取 enc 的长度
-        let enc_length = length_tracking_enc.length();
-
-        // 打印 enc 中的数据
-        let encoded_data = &length_tracking_enc.buffer();
 
         let hash_root = Txid::from_engine(enc);
         hash_root
