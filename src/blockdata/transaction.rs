@@ -39,6 +39,7 @@ use crate::util::sighash::SchnorrSighashType;
 
 use std::io::Write;
 use crate::util::length_tracking_writer::LengthTrackingWriter;
+use tracing::trace;
 
 /// A reference to a transaction output.
 ///
@@ -675,18 +676,24 @@ impl Transaction {
     //     info!("tbcTxid end hash_root:{:?}", hash_root);
     //     hash_root
     // }
-
     pub fn txid(&self) -> Txid {
         let mut enc = Txid::engine();
         let mut length_tracking_enc = LengthTrackingWriter::new(&mut enc);
 
         self.version.consensus_encode(&mut length_tracking_enc).expect("engines don't error");
+        trace!("txid version:{:?}",self.version);
         self.lock_time.consensus_encode(&mut length_tracking_enc).expect("engines don't error");
+        trace!("txid lock_time:{:?}",self.lock_time);
         (self.input.len() as u32).consensus_encode(&mut length_tracking_enc).expect("engines don't error");
+        trace!("txid input len:{:?}",self.input.len());
         (self.output.len() as u32).consensus_encode(&mut length_tracking_enc).expect("engines don't error");
+        trace!("txid output len:{:?}",self.output.len());
         
         let (input_hash, scripts_hash) = self.input_and_scripts_hash();
+        trace!("txid input_hash:{:?}",input_hash);
+        trace!("txid scripts_hash:{:?}",scripts_hash);
         let outputs_hash = self.output_hash();
+        trace!("txid outputs_hash:{:?}",outputs_hash);
 
         // Combine all parts
         length_tracking_enc.write_all(&input_hash[..]).expect("engines don't error");
