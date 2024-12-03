@@ -702,6 +702,7 @@ impl Transaction {
         length_tracking_enc.write_all(&outputs_hash[..]).expect("engines don't error");
 
         let hash_root = Txid::from_engine(enc);
+        trace!("txid hash_root:{:?}",hash_root);
         hash_root
     }
 
